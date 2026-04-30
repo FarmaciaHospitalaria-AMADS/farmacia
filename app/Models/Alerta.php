@@ -9,13 +9,33 @@ class Alerta extends Model
     protected $table = 'alertas';
 
     protected $fillable = [
-        'lote_id',
+        'insumo_id',
         'tipo',
-        'mensaje'
+        'mensaje',
+        'leida',
     ];
 
-    public function lote()
+    protected $casts = [
+        'leida' => 'boolean',
+    ];
+
+    public function insumo()
     {
-        return $this->belongsTo(Lote::class);
+        return $this->belongsTo(Insumo::class, 'insumo_id');
+    }
+
+    public function noLeidas($query)
+    {
+        return $query->where('leida', false);
+    }
+
+    public function deStockBajo($query)
+    {
+        return $query->where('tipo', 'stock_bajo');
+    }
+
+    public function porVencer($query)
+    {
+        return $query->where('tipo', 'por_vencer');
     }
 }
