@@ -7,24 +7,18 @@ use App\Models\Proveedor;
 
 class ProveedorController extends Controller
 {
-    // Función para LISTAR todos los proveedores
     public function obtenerTodos() {
         $list = Proveedor::all();
         return response()->json($list);
     }
 
-    // Función para CREAR un nuevo proveedor
     public function crear(Request $request) {
         $data = new Proveedor();
         
-        // Asignamos los datos que vienen desde la petición (Postman o la web)
         $data->nombre = $request->nombre;
         $data->telefono = $request->telefono;
         $data->email = $request->email;
         $data->direccion = $request->direccion;
-        
-        // Si pusiste el campo contacto en la migración, descomenta la siguiente línea:
-        // $data->contacto = $request->contacto; 
 
         $data->save();
 
@@ -37,11 +31,11 @@ class ProveedorController extends Controller
         
         $data = Proveedor::find($id);
         
-        // Le pasamos los nuevos valores
         $data->nombre = $request->nombre;
         $data->telefono = $request->telefono;
         $data->email = $request->email;
         $data->direccion = $request->direccion;
+        $data->estado_id = $request->estado_id;
         
         $data->save();
         
@@ -52,17 +46,14 @@ class ProveedorController extends Controller
     public function eliminarPorId($id) {
         $data = Proveedor::find($id);
         
-        // Eliminamos el registro
         $data->delete();
         
-        // Enviamos la respuesta
         $message = ["message" => "Proveedor eliminado con éxito", "status" => true];
         return response()->json($message);
     }
 
-    public function index()
-    {
-        $proveedores = Proveedor::all(); 
+        public function index() {
+        $proveedores = Proveedor::with('estado')->get(); 
         return response()->json($proveedores);
     }
 }

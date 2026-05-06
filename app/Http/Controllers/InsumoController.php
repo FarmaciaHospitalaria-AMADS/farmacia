@@ -21,7 +21,6 @@ class InsumoController extends Controller
         $data = new Insumo();
         $data->nombre = $request->nombre;
         $data->proveedor_id = $request->proveedor_id; 
-        
         $data->descripcion = $request->descripcion;
         $data->codigo = $request->codigo;
         $data->stock_minimo = $request->stock_minimo ?? 0; 
@@ -43,6 +42,7 @@ class InsumoController extends Controller
         $data->codigo = $request->codigo;
         $data->stock_minimo = $request->stock_minimo ?? 0;
         $data->categoria_id = $request->categoria_id;
+        $data->estado_id = $request->estado_id;
         
         $data->save();
         
@@ -67,7 +67,8 @@ class InsumoController extends Controller
         return response()->json($resultados);
     }
 
-    public function index() {
-    return response()->json(Insumo::all()); 
+        public function index() {
+        $insumos = Insumo::with(['proveedor', 'estado'])->get(); 
+        return response()->json($insumos);
     }
 }

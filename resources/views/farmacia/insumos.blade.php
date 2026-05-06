@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Fuentes e Íconos Premium -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
@@ -41,23 +40,9 @@
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    .btn-secondary {
-        background-color: #ffffff;
-        color: #334155;
-        border: 1px solid #e2e8f0;
-        padding: 0.6rem 1rem;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        cursor: pointer;
-    }
-
-    /* Toolbar y Buscador */
     .toolbar {
         display: flex;
         justify-content: space-between;
@@ -77,7 +62,6 @@
         top: 50%;
         transform: translateY(-50%);
         color: #94a3b8;
-        font-size: 1.2rem;
     }
 
     .search-box input {
@@ -89,7 +73,6 @@
         outline: none;
     }
 
-    /* Tabla Estilo Proveedores (Negrita 800) */
     .table-card {
         background: #ffffff;
         border-radius: 12px;
@@ -139,17 +122,27 @@
         background: #eff6ff; color: #2563eb;
         display: flex; align-items: center; justify-content: center;
         font-weight: 800; border: 1.5px solid #dbeafe;
-        flex-shrink: 0;
     }
 
     .status-badge {
-        display: inline-flex; align-items: center; gap: 0.35rem;
-        padding: 0.4rem 0.9rem; border-radius: 9999px;
-        font-size: 0.75rem; font-weight: 800;
-        background-color: #ecfdf5 !important; color: #047857 !important;
-        border: 1px solid #10b981 !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 800 !important;
+        border: 1px solid transparent;
+        white-space: nowrap;
     }
-    .status-badge i { color: #10b981 !important; font-size: 0.45rem; }
+
+    .status-badge i { font-size: 0.5rem; }
+
+    .status-badge-activo { background-color: #ecfdf5 !important; color: #047857 !important; border-color: #10b981 !important; }
+    .status-badge-inactivo { background-color: #fef2f2 !important; color: #b91c1c !important; border-color: #f87171 !important; }
+    .status-badge-cuarentena { background-color: #fffbeb !important; color: #92400e !important; border-color: #f59e0b !important; }
+    .status-badge-agotado { background-color: #fff1f2 !important; color: #9f1239 !important; border-color: #fb7185 !important; }
+    .status-badge-descontinuado { background-color: #f8fafc !important; color: #475569 !important; border-color: #cbd5e1 !important; }
 
     .btn-icon {
         background: transparent; border: none; color: #94a3b8;
@@ -164,7 +157,6 @@
         justify-content: space-between;
         align-items: center;
         color: #64748b;
-        font-size: 0.875rem;
     }
 </style>
 
@@ -185,17 +177,13 @@
                 <i class='bx bx-search'></i>
                 <input type="text" id="inputBuscarInsumo" placeholder="Buscar por nombre o código...">
             </div>
-            <div style="display: flex; gap: 0.75rem;">
-                <button class="btn-secondary"><i class='bx bx-filter-alt'></i> Filtros</button>
-                <button class="btn-secondary"><i class='bx bx-export'></i> Exportar</button>
-            </div>
         </div>
 
         <table class="custom-table">
             <thead>
                 <tr>
                     <th style="width: 25%;">Insumo / Código</th>
-                    <th style="width: 25%;">Descripción / ID</th>
+                    <th style="width: 25%;">Descripción / Ref</th>
                     <th style="width: 20%;">Proveedor / Categoría</th>
                     <th style="width: 15%;">Stock Mínimo / Estado</th>
                     <th style="width: 15%; text-align: right;">Acciones</th>
@@ -206,13 +194,8 @@
             </tbody>
         </table>
 
-        <!-- FOOTER BIEN UBICADO ABAJO -->
         <div class="table-footer">
             <span id="contadorResultados">Mostrando resultados</span>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="btn-secondary" style="padding: 0.4rem 0.8rem;">Anterior</button>
-                <button class="btn-secondary" style="padding: 0.4rem 0.8rem;">Siguiente</button>
-            </div>
         </div>
     </div>
 </div>
@@ -239,7 +222,18 @@
 
             insumos.forEach(i => {
                 const iniciales = i.nombre ? i.nombre.substring(0, 2).toUpperCase() : 'IN';
-                const activo = i.estado_id == 1;
+                
+                let claseCss = '';
+                switch(i.estado_id) {
+                    case 1: claseCss = 'status-badge-activo'; break;
+                    case 2: claseCss = 'status-badge-inactivo'; break;
+                    case 3: claseCss = 'status-badge-cuarentena'; break;
+                    case 4: claseCss = 'status-badge-agotado'; break;
+                    case 5: claseCss = 'status-badge-descontinuado'; break;
+                    default: claseCss = 'status-badge-descontinuado';
+                }
+
+                const nombreEstado = i.estado ? i.estado.nombre : 'N/A';
 
                 tabla.innerHTML += `
                     <tr>
@@ -248,7 +242,7 @@
                                 <div class="avatar">${iniciales}</div>
                                 <div class="item-details">
                                     <strong>${i.nombre}</strong>
-                                    <span>Código ID: #${i.id}</span>
+                                    <span>Código: #${i.id}</span>
                                 </div>
                             </div>
                         </td>
@@ -260,15 +254,15 @@
                         </td>
                         <td>
                             <div class="item-details">
-                                <strong>Proveedor ID: #${i.proveedor_id || 'N/A'}</strong>
-                                <span>Categoría ID: #${i.categoria_id || 'N/A'}</span>
+                                <strong>${i.proveedor ? i.proveedor.nombre : 'N/A'}</strong>
+                                <span>Cat: #${i.categoria_id || 'N/A'}</span>
                             </div>
                         </td>
                         <td>
                             <div class="item-details">
                                 <strong>Mínimo: ${i.stock_minimo}</strong>
-                                <span class="${activo ? 'status-badge' : 'status-badge-inactive'}">
-                                    <i class='bx bxs-circle'></i> ${activo ? 'Activo' : 'Inactivo'}
+                                <span class="status-badge ${claseCss}">
+                                    <i class='bx bxs-circle'></i> ${nombreEstado}
                                 </span>
                             </div>
                         </td>
@@ -282,7 +276,8 @@
                 `;
             });
         } catch (error) {
-            tabla.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:red;">Error al cargar datos</td></tr>';
+            console.error(error);
+            tabla.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:2rem;">Error al cargar datos</td></tr>';
         }
     }
 </script>
