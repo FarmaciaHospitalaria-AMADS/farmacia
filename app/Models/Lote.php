@@ -18,7 +18,7 @@ class Lote extends Model
         'fecha_vencimiento' => 'date',
         'fecha_entrada'     => 'date',
     ];
-
+    
     public function insumo(): BelongsTo
     {
         return $this->belongsTo(Insumo::class);

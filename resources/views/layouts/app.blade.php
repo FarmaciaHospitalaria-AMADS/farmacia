@@ -240,8 +240,6 @@
             <a href="{{ route('enfermeria.dashboard') }}">Inicio Enfermería</a>
             <a href="#">Pacientes</a>
             <a href="#">Toma de Signos</a>
-            <a href="{{ route('inventario.lotes.index') }}">Lotes</a>
-            <a href="{{ route('inventario.movimientos.historial') }}">Historial Movimientos</a>
                 
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active-link' : '' }}">
                     <i class='bx bx-home-alt'></i> Inicio Admin

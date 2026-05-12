@@ -40,7 +40,7 @@
             <div class="form-group">
                 <label>Insumo</label>
                 <select name="insumo_id" required>
-                    <option value="">Seleccione un insumo</option>
+                    <option value=""disabled selected>Seleccione un insumo</option>
                     @foreach($insumos as $insumo)
                         <option value="{{ $insumo->id }}">{{ $insumo->nombre }}</option>
                     @endforeach
