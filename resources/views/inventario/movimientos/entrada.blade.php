@@ -3,75 +3,229 @@
 @section('title', 'Registrar Entrada')
 
 @section('content')
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow border-success">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"> Registrar Entrada de Stock</h4>
-                </div>
-                <div class="card-body">
+<style>
 
-                    <div class="alert alert-info">
-                        <strong>Lote:</strong> {{ $lote->codigo_lote }} |
-                        <strong>Insumo:</strong> {{ $lote->insumo->nombre ?? 'N/A' }} |
-                        <strong>Stock actual:</strong> {{ $lote->cantidad_actual }}
-                    </div>
+.main-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2f7, #d9e2ec);
+    padding: 20px;
+}
 
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    animation: fadeIn 0.5s ease;
+}
 
-                    <form action="{{ route('inventario.movimientos.store', $lote) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="tipo" value="entrada">
+.form-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Cantidad a ingresar *</label>
-                            <input type="number"
-                                   name="cantidad"
-                                   class="form-control @error('cantidad') is-invalid @enderror"
-                                   value="{{ old('cantidad') }}"
-                                   min="1"
-                                   required>
-                            @error('cantidad')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+.form-header h3 {
+    font-weight: 700;
+    color: #0f5132;
+    margin: 0;
+}
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Motivo</label>
-                            <input type="text"
-                                   name="motivo"
-                                   class="form-control"
-                                   value="{{ old('motivo') }}"
-                                   placeholder="Ej: Reposición de stock">
-                        </div>
+.form-header p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 4px 0 0;
+}
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Referencia</label>
-                            <input type="text"
-                                   name="referencia"
-                                   class="form-control"
-                                   value="{{ old('referencia') }}"
-                                   placeholder="Ej: Orden de compra #123">
-                        </div>
+/* Info del lote */
+.lote-info {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-bottom: 22px;
+    font-size: 0.85rem;
+    color: #495057;
+}
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">Registrar Entrada</button>
-                            <a href="{{ route('inventario.lotes.show', $lote) }}" class="btn btn-secondary">Cancelar</a>
-                        </div>
-                    </form>
+.lote-info span {
+    display: flex;
+    gap: 4px;
+}
 
-                </div>
-            </div>
-        </div>
+.lote-info strong { color: #1e3c72; }
+
+/* Inputs */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #dee2e6;
+    padding: 8px;
+    outline: none;
+    transition: 0.3s;
+    font-size: 0.9rem;
+    background: transparent;
+}
+
+.form-group input:focus { border-color: #198754; }
+
+.input-error { border-color: #dc3545 !important; }
+
+.error-msg {
+    font-size: 0.78rem;
+    color: #dc3545;
+    margin-top: 4px;
+}
+
+/* Alert error */
+.alert-custom {
+    background: #ffe3e3;
+    color: #842029;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+}
+
+.alert-custom ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* Botones */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.btn-cancel {
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #dee2e6;
+    color: #333;
+    transition: 0.3s;
+}
+
+.btn-cancel:hover { background: #ced4da; color: #333; }
+
+.btn-save {
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #198754, #157347);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(25,135,84,0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+<div class="main-wrapper">
+<div class="form-container">
+
+    {{-- Header --}}
+    <div class="form-header">
+        <h3>➕ Registrar Entrada</h3>
+        <p>Ingreso de stock al inventario</p>
     </div>
+
+    {{-- Info del lote --}}
+    <div class="lote-info">
+        <span><strong>Lote:</strong> {{ $lote->codigo_lote }}</span>
+        <span>·</span>
+        <span><strong>Insumo:</strong> {{ $lote->insumo->nombre ?? 'N/A' }}</span>
+        <span>·</span>
+        <span><strong>Stock actual:</strong> {{ $lote->cantidad_actual }}</span>
+    </div>
+
+    {{-- Errores --}}
+    @if($errors->any())
+        <div class="alert-custom">
+            <strong>Corrige los siguientes errores:</strong>
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- Formulario --}}
+    <form action="{{ route('inventario.movimientos.store', $lote) }}" method="POST">
+        @csrf
+        <input type="hidden" name="tipo" value="entrada">
+
+        <div class="form-group">
+            <label>Cantidad a ingresar *</label>
+            <input
+                type="number"
+                name="cantidad"
+                value="{{ old('cantidad') }}"
+                min="1"
+                placeholder="Ej: 50"
+                class="{{ $errors->has('cantidad') ? 'input-error' : '' }}"
+                required
+            >
+            @error('cantidad')
+                <div class="error-msg">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label>Motivo</label>
+            <input
+                type="text"
+                name="motivo"
+                value="{{ old('motivo') }}"
+                placeholder="Ej: Reposición de stock"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Referencia</label>
+            <input
+                type="text"
+                name="referencia"
+                value="{{ old('referencia') }}"
+                placeholder="Ej: Orden de compra #123"
+            >
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ route('inventario.lotes.show', $lote) }}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-save">Guardar Entrada</button>
+        </div>
+    </form>
+
 </div>
+</div>
+
 @endsection

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Inventario;
 
 use App\Models\Lote;
+use App\Models\Insumo;
 use App\Models\Movimiento;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +15,6 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 
 class MovimientoController extends Controller implements HasMiddleware
 {
- 
     public static function middleware(): array
     {
         return [
@@ -21,7 +22,6 @@ class MovimientoController extends Controller implements HasMiddleware
         ];
     }
 
-    // Formulario ENTRADA — solo Admin (1) y Farmacéutico (2)
     public function entrada(Lote $lote)
     {
         if (!in_array(Auth::user()->role_id, [1, 2])) {
@@ -31,7 +31,6 @@ class MovimientoController extends Controller implements HasMiddleware
         return view('inventario.movimientos.entrada', compact('lote'));
     }
 
-    // Formulario SALIDA — Admin (1), Farmacéutico (2) y Enfermería (3)
     public function salida(Lote $lote)
     {
         if (!in_array(Auth::user()->role_id, [1, 2, 3])) {
@@ -88,13 +87,38 @@ class MovimientoController extends Controller implements HasMiddleware
             ->with('success', 'Movimiento registrado correctamente.');
     }
 
-    // Historial — todos los roles
-    public function historial()
+    // Historial con filtros
+    public function historial(Request $request)
     {
-        $movimientos = Movimiento::with(['lote.insumo', 'usuario'])
-            ->latest()
-            ->paginate(20);
+        $query = Movimiento::with(['lote.insumo', 'usuario'])->latest();
 
-        return view('inventario.movimientos.historial', compact('movimientos'));
+        // Filtro por tipo
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        // Filtro por insumo (a través de lote)
+        if ($request->filled('insumo_id')) {
+            $query->whereHas('lote', fn($q) => $q->where('insumo_id', $request->insumo_id));
+        }
+
+        // Filtro por código de lote
+        if ($request->filled('search')) {
+            $query->whereHas('lote', fn($q) => $q->where('codigo_lote', 'like', '%' . $request->search . '%'));
+        }
+
+        // Filtro por rango de fechas
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+
+        $insumos     = Insumo::orderBy('nombre')->get();
+        $movimientos = $query->paginate(20)->withQueryString();
+
+        return view('inventario.movimientos.historial', compact('movimientos', 'insumos'));
     }
 }

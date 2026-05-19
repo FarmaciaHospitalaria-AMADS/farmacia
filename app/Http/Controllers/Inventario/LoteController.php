@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventario;
 use App\Models\Lote;
 use App\Models\Insumo;
 use App\Models\Movimiento;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 
 class LoteController extends Controller implements HasMiddleware
 {
-        public static function middleware(): array
+    public static function middleware(): array
     {
         return [
             new Middleware('auth'),
@@ -22,13 +23,41 @@ class LoteController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $lotes = Lote::with(['insumo', 'registrador'])
-            ->orderBy('fecha_vencimiento')
-            ->paginate(15);
+        $query = Lote::with(['insumo', 'registrador'])
+            ->orderBy('fecha_vencimiento');
 
-        return view('inventario.lotes.index', compact('lotes'));
+        // Filtro por código de lote
+        if ($request->filled('search')) {
+            $query->where('codigo_lote', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtro por insumo
+        if ($request->filled('insumo_id')) {
+            $query->where('insumo_id', $request->insumo_id);
+        }
+
+        // Filtro por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        // Filtro por vencimiento
+        if ($request->filled('vencimiento')) {
+            match($request->vencimiento) {
+                'vigente' => $query->whereDate('fecha_vencimiento', '>=', now()),
+                'proximo' => $query->whereDate('fecha_vencimiento', '<=', now()->addDays(30))
+                                   ->whereDate('fecha_vencimiento', '>=', now()),
+                'vencido' => $query->whereDate('fecha_vencimiento', '<', now()),
+                default   => null
+            };
+        }
+
+        $insumos = Insumo::orderBy('nombre')->get();
+        $lotes   = $query->paginate(15)->withQueryString();
+
+        return view('inventario.lotes.index', compact('lotes', 'insumos'));
     }
 
     public function create()

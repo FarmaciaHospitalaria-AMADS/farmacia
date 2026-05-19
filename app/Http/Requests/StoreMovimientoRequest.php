@@ -16,19 +16,22 @@ class StoreMovimientoRequest extends FormRequest
     {
         return [
             'tipo'       => 'required|in:entrada,salida',
-            'cantidad'   => 'required|integer|min:1',
+            'cantidad'   => 'required|integer|min:1|max:999999',
             'motivo'     => 'nullable|string|max:255',
-            'referencia' => 'nullable|string|max:100',
+            'referencia' => 'nullable|string|max:255',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'tipo.required'     => 'El tipo de movimiento es obligatorio.',
-            'tipo.in'           => 'El tipo debe ser entrada o salida.',
-            'cantidad.required' => 'La cantidad es obligatoria.',
-            'cantidad.min'      => 'La cantidad debe ser mayor a 0.',
+            'cantidad.required'  => 'La cantidad es obligatoria.',
+            'cantidad.integer'   => 'La cantidad debe ser un número entero.',
+            'cantidad.min'       => 'La cantidad mínima es 1.',
+            'cantidad.max'       => 'La cantidad excede el límite permitido.',
+            'tipo.in'            => 'El tipo de movimiento no es válido.',
+            'motivo.max'         => 'El motivo no puede superar los 255 caracteres.',
+            'referencia.max'     => 'La referencia no puede superar los 255 caracteres.',
         ];
     }
 }
