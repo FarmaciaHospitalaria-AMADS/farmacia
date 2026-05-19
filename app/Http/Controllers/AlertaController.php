@@ -19,10 +19,12 @@ class AlertaController extends Controller
             $stockTotal = $insumo->lotes->sum('cantidad_actual');
 
             if ($stockTotal <= $insumo->stock_minimo) {
-                // Evitar duplicados
                 $existe = Alerta::where('insumo_id', $insumo->id)
                     ->where('tipo', 'stock_bajo')
-                    ->where('leida', false)
+                    ->where(function ($q) {
+                        $q->where('leida', false)
+                            ->orWhere('updated_at', '>=', Carbon::now()->subHours(24));
+                    })
                     ->exists();
 
                 if (!$existe) {
@@ -46,14 +48,17 @@ class AlertaController extends Controller
         foreach ($lotesPorVencer as $lote) {
             $existe = Alerta::where('insumo_id', $lote->insumo_id)
                 ->where('tipo', 'por_vencer')
-                ->where('leida', false)
+                ->where(function ($q) {
+                    $q->where('leida', false)
+                        ->orWhere('updated_at', '>=', Carbon::now()->subHours(24));
+                })
                 ->exists();
 
             if (!$existe) {
                 Alerta::create([
                     'insumo_id' => $lote->insumo_id,
                     'tipo'      => 'por_vencer',
-                    'mensaje'   => "El lote '{$lote->numero_lote}' del insumo '{$lote->insumo->nombre}' vence el {$lote->fecha_vencimiento}.",
+                    'mensaje'   => "El lote '{$lote->codigo_lote}' del insumo '{$lote->insumo->nombre}' vence el {$lote->fecha_vencimiento}.",
                     'leida'     => false,
                 ]);
             }
