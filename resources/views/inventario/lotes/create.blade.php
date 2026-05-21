@@ -63,7 +63,14 @@
             <!-- Proveedor -->
             <div class="form-group">
                 <label>Proveedor</label>
-                <input type="text" name="proveedor" placeholder="Opcional">
+                <select name="proveedor_id">
+                    <option value="">Seleccione un proveedor</option>
+                    @foreach ( $proveedores as $proveedor)
+                        <option value="{{ $proveedor->id }}" {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}>
+                        {{ $proveedor->nombre }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- Botones -->

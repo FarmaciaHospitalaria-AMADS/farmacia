@@ -66,7 +66,7 @@
     color: white;
 }
 
-/* ── FILTROS ── */
+/* Filtros */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -242,7 +242,7 @@
             <h3>Inventario de Lotes</h3>
             <p>Gestión y control de stock</p>
         </div>
-        @if(in_array(auth()->user()->role_id, [1, 2]))
+        @if(in_array(auth()->user()->role_id, [1]))
             <a href="{{ route('inventario.lotes.create') }}" class="btn-main">
                 <i class="fa-solid fa-plus"></i> Nuevo Lote
             </a>
@@ -349,8 +349,12 @@
                 <td>{{ $lote->registrador->name ?? 'Sistema' }}</td>
                 <td class="actions text-end">
                     <a href="{{ route('inventario.lotes.show', $lote) }}"><i class="fa-solid fa-eye"></i></a>
+                    @if(in_array(auth()->user()->role_id, [1, 2]))
                     <a href="{{ route('inventario.movimientos.entrada', $lote) }}"><i class="fa-regular fa-plus"></i></a>
+                    @endif
+                    @if(in_array(auth()->user()->role_id, [1, 2, 3]))
                     <a href="{{ route('inventario.movimientos.salida', $lote) }}"><i class="fa-solid fa-minus"></i></a>
+                    @endif
                 </td>
             </tr>
             @endforeach

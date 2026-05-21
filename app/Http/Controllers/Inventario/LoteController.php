@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventario;
 
 use App\Models\Lote;
 use App\Models\Insumo;
+use App\Models\Proveedor;
 use App\Models\Movimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ class LoteController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth'),
-            new Middleware('role:1,2', except: ['index', 'show']),
+            new Middleware('role:1', except: ['index', 'show']),
         ];
     }
 
@@ -63,7 +64,8 @@ class LoteController extends Controller implements HasMiddleware
     public function create()
     {
         $insumos = Insumo::orderBy('nombre')->get();
-        return view('inventario.lotes.create', compact('insumos'));
+        $proveedores = Proveedor::orderBy('nombre')->get();
+        return view('inventario.lotes.create', compact('insumos', 'proveedores'));
     }
 
     public function store(StoreLoteRequest $request)

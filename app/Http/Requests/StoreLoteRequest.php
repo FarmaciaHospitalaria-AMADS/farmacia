@@ -19,7 +19,7 @@ class StoreLoteRequest extends FormRequest
             'insumo_id'         => 'required|exists:insumos,id',
             'cantidad_inicial'  => 'required|integer|min:1|max:999999',
             'fecha_vencimiento' => 'required|date|after:today',
-            'proveedor'         => 'nullable|string|max:100',
+            'proveedor_id'      => 'nullable|exists:proveedores,id',
         ];
     }
 
@@ -38,7 +38,8 @@ class StoreLoteRequest extends FormRequest
             'cantidad_inicial.max'       => 'La cantidad no puede superar 999,999.',
             'fecha_vencimiento.required' => 'La fecha de vencimiento es obligatoria.',
             'fecha_vencimiento.date'     => 'La fecha no tiene un formato válido.',
-            'fecha_vencimiento.after'    => 'La fecha debe ser posterior a hoy.',
+            'fecha_vencimiento.after'    => 'La fecha debe ser posterior al ' . now()->translatedFormat('d \d\e F \d\e Y') . '.',
+            'proveedor_id.exists'        => 'El proveedor seleccionado no es válido.',
             'proveedor.max'              => 'El proveedor no puede superar los 100 caracteres.',
         ];
     }
