@@ -4,6 +4,11 @@ use App\Http\Controllers\AlertaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Proveedor;
+use App\Models\Insumo;
+use App\Models\Alerta;
+
 
 // ========================================================
 // RUTAS PARA USUARIOS NO AUTENTICADOS (GUEST)
@@ -42,7 +47,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:1')->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {
-            return view('admin.index');
+            $totalUsuarios = \App\Models\User::count();
+            $totalProveedores = \App\Models\Proveedor::count();
+            $totalInsumos = \App\Models\Insumo::count();
+            $totalAlertas = \App\Models\Alerta::count();
+            
+            return view('admin.index', compact('totalUsuarios', 'totalProveedores', 'totalInsumos', 'totalAlertas'));
         })->name('admin.dashboard');
 
         // Protegido estrictamente solo para el Admin
@@ -77,8 +87,13 @@ Route::middleware('auth')->group(function () {
     // --------------------------------------------------------
     Route::middleware('role:2')->prefix('farmacia')->group(function () {
         
-        Route::get('/dashboard', function () {
-            return view('farmacia.index');
+      Route::get('/dashboard', function () {
+            $totalInsumos = \App\Models\Insumo::count();
+            $totalProveedores = \App\Models\Proveedor::count();
+            $stockCritico = 0; 
+            $alertasPendientes = 0;
+
+            return view('farmacia.index', compact('totalInsumos', 'totalProveedores', 'stockCritico', 'alertasPendientes'));
         })->name('farmacia.dashboard');
         
     });
