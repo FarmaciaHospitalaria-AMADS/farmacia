@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\UbicacionController;
 use App\Http\Controllers\EstadoController;
+use App\Http\Controllers\UserController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -59,3 +60,10 @@ Route::post('/estados/crear', [EstadoController::class, 'crear']);
 Route::put('/estados/actualizar', [EstadoController::class, 'actualizarPorId']);
 Route::delete('/estados/eliminar/{id}', [EstadoController::class, 'eliminarPorId']);
 Route::get('/estados/buscar/{termino}', [EstadoController::class, 'buscar']);
+
+// Rutas para Gestión de Usuarios
+Route::get('/usuarios', [UserController::class, 'index']);
+Route::get('/roles/obtener/todos', [UserController::class, 'obtenerRoles']);
+Route::post('/usuarios/crear', [UserController::class, 'crear']);
+Route::put('/usuarios/actualizar', [UserController::class, 'actualizarPorId']);
+Route::delete('/usuarios/eliminar/{id}', [UserController::class, 'eliminarPorId']);

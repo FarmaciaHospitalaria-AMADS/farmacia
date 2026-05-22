@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withMiddleware(function (Middleware $middleware) {
+        // Registramos el alias 'role'
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);

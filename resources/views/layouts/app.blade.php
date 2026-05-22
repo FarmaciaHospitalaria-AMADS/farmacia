@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistema de Salud')</title>
 
-    <!-- Fuentes e Íconos Premium -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -135,70 +134,21 @@
             padding: 0;
         }
 
-        /* ========================================================
-           ADAPTACIÓN PARA CELULARES Y TABLETS (Media Queries)
-           ======================================================== */
         @media (max-width: 1100px) {
-            .navbar-premium {
-                padding: 1rem;
-            }
-
-            .menu-toggle {
-                display: block; /* Mostramos la hamburguesa */
-            }
-
-            /* Escondemos el menú normal y lo preparamos para ser desplegable */
+            .navbar-premium { padding: 1rem; }
+            .menu-toggle { display: block; }
             .nav-wrapper {
-                display: none; 
-                flex-direction: column;
-                position: absolute;
-                top: 100%; /* Justo debajo del navbar */
-                left: 0;
-                width: 100%;
-                background-color: #ffffff;
-                padding: 1.5rem;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                border-top: 1px solid #e2e8f0;
-                gap: 1rem;
-                align-items: stretch;
+                display: none; flex-direction: column; position: absolute;
+                top: 100%; left: 0; width: 100%; background-color: #ffffff;
+                padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                border-top: 1px solid #e2e8f0; gap: 1rem; align-items: stretch;
             }
-
-            /* Clase que se activa con JS para mostrar el menú */
-            .nav-wrapper.active {
-                display: flex;
-            }
-
-            /* Ajustes para que los enlaces ocupen todo el ancho en celular */
-            .nav-links {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .nav-links a {
-                width: 100%;
-                padding: 0.8rem 1rem;
-                font-size: 0.95rem;
-            }
-
-            /* Ajustes del usuario para celular */
-            .user-menu {
-                flex-direction: column;
-                width: 100%;
-                border-top: 1px solid #e2e8f0;
-                padding-top: 1rem;
-                gap: 1rem;
-            }
-
-            .user-greeting {
-                justify-content: center;
-            }
-
-            .logout-btn {
-                width: 100%;
-                justify-content: center;
-                padding: 0.8rem;
-                font-size: 0.95rem;
-            }
+            .nav-wrapper.active { display: flex; }
+            .nav-links { flex-direction: column; width: 100%; }
+            .nav-links a { width: 100%; padding: 0.8rem 1rem; font-size: 0.95rem; }
+            .user-menu { flex-direction: column; width: 100%; border-top: 1px solid #e2e8f0; padding-top: 1rem; gap: 1rem; }
+            .user-greeting { justify-content: center; }
+            .logout-btn { width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -211,12 +161,10 @@
         </div>
 
     @auth
-        <!-- Botón Hamburguesa -->
         <button class="menu-toggle" id="mobile-menu-btn">
             <i class='bx bx-menu'></i>
         </button>
 
-        <!-- Contenedor Envolvente -->
         <div class="nav-wrapper" id="nav-wrapper">
             <div class="nav-links">
             @if(Auth::user()->role_id === 1)
@@ -245,7 +193,7 @@
                     <i class='bx bx-home-alt'></i> Inicio Admin
                 </a>
                 
-                <a href="#" class="{{ request()->is('admin/usuarios*') ? 'active-link' : '' }}">
+                <a href="{{ url('/admin/usuarios') }}" class="{{ request()->is('admin/usuarios*') ? 'active-link' : '' }}">
                     <i class='bx bx-group'></i> Gestionar Usuarios
                 </a>
                 
@@ -300,7 +248,6 @@
         @yield('content')
     </main>
 
-    <!-- Script para desplegar el menú en celular -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btnMenu = document.getElementById('mobile-menu-btn');
@@ -308,10 +255,7 @@
 
             if(btnMenu && navWrapper) {
                 btnMenu.addEventListener('click', function() {
-                    // Alterna la clase active que muestra el menú
                     navWrapper.classList.toggle('active');
-                    
-                    // Cambia el ícono de hamburguesa a una "X" y viceversa
                     const icono = btnMenu.querySelector('i');
                     if(icono.classList.contains('bx-menu')) {
                         icono.classList.remove('bx-menu');
