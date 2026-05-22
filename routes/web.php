@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AlertaController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Proveedor;
 use App\Models\Insumo;
@@ -104,7 +106,34 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:3')->prefix('enfermeria')->group(function () {
         
         Route::get('/dashboard', function () {
-            return view('enfermeria.index');
+            $hoy = Carbon::today();
+
+            $movimientosHoy = DB::table('movimientos')
+                                ->whereDate('created_at', $hoy)
+                                ->count();
+
+            $entradasHoy = DB::table('movimientos')
+                                ->whereDate('created_at', $hoy)
+                                ->where('tipo', 'Entrada')
+                                ->count();
+                                
+            $salidasHoy = DB::table('movimientos')
+                                ->whereDate('created_at', $hoy)
+                                ->where('tipo', 'Salida')
+                                ->count();
+
+            $detalleMovimientos = DB::table('movimientos')
+                                    ->select('created_at', 'tipo', 'cantidad', 'motivo', 'referencia')
+                                    ->whereDate('created_at', $hoy)
+                                    ->orderBy('created_at', 'desc')
+                                    ->take(10) 
+                                    ->get();
+
+            $totalInsumos = DB::table('insumos')->count();
+
+            return view('enfermeria.index', compact(
+                'movimientosHoy', 'entradasHoy', 'salidasHoy', 'detalleMovimientos', 'totalInsumos'
+            ));
         })->name('enfermeria.dashboard');
         
     });

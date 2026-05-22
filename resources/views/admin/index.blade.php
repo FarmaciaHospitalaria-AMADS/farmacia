@@ -106,7 +106,7 @@
         </div>
 
         <div class="section-card">
-            <h2 class="section-title"><i class='bx bx-bell'></i> Alertas Críticas</h2>
+            <h2 class="section-title"><i class='bx bx-bell'></i> Alertas Activas</h2>
             <div class="alert-list">
                 <div class="alert-item">
                     <div class="alert-bullet"></div>
