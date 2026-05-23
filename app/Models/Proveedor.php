@@ -14,4 +14,9 @@ class Proveedor extends Model
     {
         return $this->hasMany(Insumo::class);
     }
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'estado_id');
+    }
 }

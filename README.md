@@ -1,4 +1,5 @@
 Pasos a seguir para ejecutar el programa 
+
 1. La carpeta vendor se ha quitado por su peso. para volver a tener ejecuta el comando "composer install" en la terminal de visual
    
 2. crear la base de datos en mysql, ejecuta "CREATE DATABASE farmacia_hospitalaria;" en mysql
@@ -16,5 +17,18 @@ Pasos a seguir para ejecutar el programa
 8. por favor, respeten el orden de las carpetas.
 
 9. si cambiaran algo de la bd, informenlo a todos y compartan las migraciones para poder trabajar con esos cambios.
+
+NUEVO DATOS:
+
+1. ya no hace falta que pongan http://127.0.0.1:8000/login, hoy automaticamente ingresa al login en caso de no estar logueado
+y en caso de estarlo manda al dashboard del rol con que el que se haya iniciado sesion
+
+2. en caso de ya tener las tablas del principio, no hace falta que ejecutes "php artisan migrate:fresh --seed"
+para tener la nueva tabla estados y asi mismo agregar el nuevo campo a las demas tablas bastas con: "php artisan migrate" 
+
+3. hay seeders con datos de las tablas, estados, categorias, areas y ubicaciones, basta con: "php artisan db:seed" (IMPORTANTE: en caso de tener
+los datos de antes, comenta en el databaseseeder, el de roles y el de user)
+
+4. la tabla estados, esta configurada para que al ingresar un nuevo registro, guarde en ese campo el estado 1, que seria "activo"
 
 cualquier duda haganmela saber por favor

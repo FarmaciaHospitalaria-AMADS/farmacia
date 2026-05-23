@@ -14,14 +14,18 @@ class AuthController extends Controller
     }
 
     // Procesar las credenciales
-    public function login(LoginRequest $request)
+public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
 
-        if (Auth::attempt($credentials)) {
+        // Verificamos si el checkbox fue marcado. 
+        // Si el usuario lo marcó, $remember será true.
+        $remember = $request->filled('remember');
+
+        // Pasamos $remember como segundo parámetro al Auth::attempt
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // Lógica de redirección por rol
             $user = Auth::user();
             
             return match ($user->role_id) {
@@ -33,7 +37,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Las credenciales no coinciden.',
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ])->onlyInput('email');
     }
     // Cerrar sesión

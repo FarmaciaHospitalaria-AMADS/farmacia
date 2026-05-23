@@ -8,7 +8,7 @@ class Area extends Model
 {
     protected $table = 'areas';
 
-    protected $fillable = ['nombre', 'ubicacion_id'];
+    protected $fillable = ['nombre', 'descripcion'];
 
     public function ubicacion()
     {

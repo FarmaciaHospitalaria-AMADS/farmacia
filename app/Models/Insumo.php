@@ -34,4 +34,8 @@ class Insumo extends Model
     {
         return $this->hasMany(Lote::class);
     }
+
+        public function estado() {
+        return $this->belongsTo(Estado::class, 'estado_id');
+    }
 }
