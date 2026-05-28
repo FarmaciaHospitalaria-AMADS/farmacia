@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('area_id')->nullable()->constrained('areas');
             $table->enum('tipo', ['entrada', 'salida']);
             $table->integer('cantidad');
-            $table->string('motivo', 255);
+            $table->text('motivo')->nullable();
             $table->string('referencia')->nullable(); 
             $table->dateTime('fecha')->useCurrent();
             $table->timestamps();
